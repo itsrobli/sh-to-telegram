@@ -10,3 +10,5 @@ readme = "README.md"
 
 [dependencies]
 clap = { version = "3.2.8", features = ["derive"] }
+frankenstein = "0.19"
+chrono = "0.4"
