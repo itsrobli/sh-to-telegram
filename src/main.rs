@@ -44,14 +44,10 @@ fn format_message(has_moved: bool, file_path: String) -> String {
 
 fn main() {
     let cli = Cli::parse();
-    config::get_configs();
+    let config = config::get_configs().expect("Couldn't get configs");
 
-    // let token = env::var("TOKEN")
-    //     .expect("TOKEN not found");
-    // let current_chat_id = env::var("CURRENT_CHAT_ID")
-    //     .expect("CURRENT_CHAT_ID not found");
-    // let message = format_message(cli.has_moved, cli.file_path);
-    // send_message(message, token, current_chat_id);
-
-
+    let token = config.telegram.token;
+    let current_chat_id = config.telegram.current_chat_id;
+    let message = format_message(cli.has_moved, cli.file_path);
+    send_message(message, token, current_chat_id);
 }

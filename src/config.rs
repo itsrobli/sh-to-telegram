@@ -5,42 +5,35 @@ use toml::de::Error;
 use std::collections::HashMap;
 
 #[derive(Deserialize)]
-struct Config {
-    telegram: Telegram,
+pub struct Config {
+    pub telegram: Telegram,
 }
 
 #[derive(Deserialize)]
-struct Telegram {
-    token: String,
-    current_chat_id: String,
+pub struct Telegram {
+    pub(crate) token: String,
+    pub(crate) current_chat_id: String,
 }
 
 
-pub fn get_configs() -> Result<(), Error> {
-    // let mut dotenv_path = dirs::home_dir().unwrap();
-    // dotenv_path.push("Dropbox");
-    // dotenv_path.push("bridge_to_overlord");
-    // dotenv_path.push("configs");
-    // dotenv_path.push("sh-to-telegram.env");
-    // println!("{}", dirs::home_dir().unwrap().display());
-    // println!("{}", dotenv_path.display());
+pub fn get_configs() -> Result<Config, Error> {
+    let mut config_path = dirs::home_dir().unwrap();
+    config_path.push("Dropbox");
+    config_path.push("bridge_to_overlord");
+    config_path.push("configs");
+    config_path.push("sh-to-telegram.toml");
+    println!("{}", dirs::home_dir().unwrap().display());
+    println!("{}", config_path.display());
 
-    let toml_content = r#"
-        [telegram]
-        token = "fake token"
-        current_chat_id = "fake chat ID"
-    "#;
+    let contents = fs::read_to_string(&config_path)
+        .expect("Something went wrong reading the file");
+    println!("With text:\n{}", contents);
 
-    let package_info: Config = toml::from_str(toml_content)?;
+    let package_info: Config = toml::from_str(&*contents)?;
 
     println!("Token: {}", package_info.telegram.token);
 
-    // let contents = fs::read_to_string(&dotenv_path)
-    //     .expect("Something went wrong reading the file");
-    // println!("With text:\n{}", contents);
-    //
-    // dotenv::from_path(dotenv_path.as_path()).expect("dot env not found");
-    // dotenv::dotenv().expect("Failed to read .env file");
-    Ok(())
+
+    Ok(package_info)
 }
 
