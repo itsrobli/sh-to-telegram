@@ -1,11 +1,11 @@
+mod config;
+
 use std::env;
 use clap::Parser;
 use frankenstein::SendMessageParams;
 use frankenstein::TelegramApi;
 use frankenstein::Api;
 use chrono::prelude::*;
-use dotenv;
-use dirs;
 
 
 /// Parse from the CLI
@@ -44,19 +44,14 @@ fn format_message(has_moved: bool, file_path: String) -> String {
 
 fn main() {
     let cli = Cli::parse();
-    let mut dotenv_path = dirs::home_dir().unwrap();
-    dotenv_path.push("Dropbox");
-    dotenv_path.push("bridge_to_overlord");
-    dotenv_path.push("configs");
-    dotenv_path.push("sh-to-telegram.env");
-    println!("{}", dirs::home_dir().unwrap().display());
-    println!("{}", dotenv_path.display());
-    dotenv::from_path(dotenv_path.as_path()).expect("dot env not found");
-    dotenv::dotenv().expect("Failed to read .env file");
-    let token = env::var("TOKEN")
-        .expect("TOKEN not found");
-    let current_chat_id = env::var("CURRENT_CHAT_ID")
-        .expect("CURRENT_CHAT_ID not found");
-    let message = format_message(cli.has_moved, cli.file_path);
-    send_message(message, token, current_chat_id);
+    config::get_configs();
+
+    // let token = env::var("TOKEN")
+    //     .expect("TOKEN not found");
+    // let current_chat_id = env::var("CURRENT_CHAT_ID")
+    //     .expect("CURRENT_CHAT_ID not found");
+    // let message = format_message(cli.has_moved, cli.file_path);
+    // send_message(message, token, current_chat_id);
+
+
 }
