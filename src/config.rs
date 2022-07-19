@@ -2,7 +2,6 @@ use dirs;
 use std::fs;
 use serde::Deserialize;
 use toml::de::Error;
-use std::collections::HashMap;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -14,7 +13,6 @@ pub struct Telegram {
     pub(crate) token: String,
     pub(crate) current_chat_id: String,
 }
-
 
 pub fn get_configs() -> Result<Config, Error> {
     let mut config_path = dirs::home_dir().unwrap();
@@ -33,7 +31,5 @@ pub fn get_configs() -> Result<Config, Error> {
 
     println!("Token: {}", package_info.telegram.token);
 
-
     Ok(package_info)
 }
-
