@@ -20,6 +20,10 @@ pub fn format_message(has_moved: bool, file_path: String) -> String {
         message.push_str("moved to Plex ");
         let now = Local::now();
         message.push_str(now.format("%Y/%m/%d").to_string().as_str());
+    } else {
+        message.push_str("did not move ");
+        let now = Local::now();
+        message.push_str(now.format("%Y/%m/%d").to_string().as_str());
     }
     return message
 }
