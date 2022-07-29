@@ -16,8 +16,8 @@ pub fn send_message(msg: String, token: String, current_chat_id: String) {
 }
 
 pub fn format_message(has_moved: bool, file_path: String) -> String {
-    let filename = Path::new(&file_path).file_name().unwrap();
-    let mut message = format!("{:?}\n", filename);
+    let filename = Path::new(&file_path).file_name().unwrap().to_str().unwrap();
+    let mut message = format!("{:}\n", filename);
     if has_moved {
         message.push_str("moved to Plex ");
         let now = Local::now();
