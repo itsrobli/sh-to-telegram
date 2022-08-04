@@ -20,16 +20,16 @@ pub fn get_configs() -> Result<Config, Error> {
     config_path.push("bridge_to_overlord");
     config_path.push("configs");
     config_path.push("sh-to-telegram.toml");
-    println!("{}", dirs::home_dir().unwrap().display());
-    println!("{}", config_path.display());
+    // println!("{}", dirs::home_dir().unwrap().display());
+    // println!("{}", config_path.display());
 
     let contents = fs::read_to_string(&config_path)
         .expect("Something went wrong reading the file");
-    println!("With text:\n{}", contents);
+    // println!("With text:\n{}", contents);
 
     let package_info: Config = toml::from_str(&*contents)?;
 
-    println!("Token: {}", package_info.telegram.token);
+    // println!("Token: {}", package_info.telegram.token);
 
     Ok(package_info)
 }
