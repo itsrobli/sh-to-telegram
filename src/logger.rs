@@ -7,7 +7,7 @@ pub fn log_this(msg: String) {
     let mut log_path = dirs::home_dir().unwrap();
     log_path.push("Dropbox");
     log_path.push("bridge_to_overlord");
-    log_path.push("staging_log copy.txt");
+    log_path.push("staging_log.txt");
 
     let mut file = OpenOptions::new()
         .write(true)
