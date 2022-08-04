@@ -1,5 +1,6 @@
 mod config;
 mod telegram;
+mod logger;
 
 use clap::Parser;
 
