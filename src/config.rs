@@ -1,5 +1,6 @@
 use dirs;
 use std::fs;
+use std::path::PathBuf;
 use serde::Deserialize;
 use toml::de::Error;
 
@@ -14,22 +15,23 @@ pub struct Telegram {
     pub(crate) current_chat_id: String,
 }
 
-pub fn get_configs() -> Result<Config, Error> {
+pub fn config_path() -> PathBuf {
     let mut config_path = dirs::home_dir().unwrap();
-    config_path.push("Dropbox");
-    config_path.push("bridge_to_overlord");
-    config_path.push("configs");
+    config_path.push("bin");
     config_path.push("sh-to-telegram.toml");
-    // println!("{}", dirs::home_dir().unwrap().display());
-    // println!("{}", config_path.display());
+    config_path
+}
 
-    let contents = fs::read_to_string(&config_path)
-        .expect("Something went wrong reading the file");
-    // println!("With text:\n{}", contents);
+pub fn get_configs() -> Result<Config, Error> {
+    let config_path = config_path();
 
-    let package_info: Config = toml::from_str(&*contents)?;
-
-    // println!("Token: {}", package_info.telegram.token);
-
-    Ok(package_info)
+    match fs::read_to_string(&config_path) {
+        Ok(contents) => {
+            let package_info: Config = toml::from_str(&*contents)?;
+            Ok(package_info)
+        }
+        Err(_) => {
+            panic!("Could not setup new configs.");
+        }
+    }
 }

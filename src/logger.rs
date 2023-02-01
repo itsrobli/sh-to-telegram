@@ -1,13 +1,18 @@
 use dirs;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
+use std::path::PathBuf;
 use chrono::prelude::*;
 
-pub fn log_this(msg: String) {
+pub fn log_path() -> PathBuf {
     let mut log_path = dirs::home_dir().unwrap();
-    log_path.push("Dropbox");
-    log_path.push("bridge_to_overlord");
-    log_path.push("staging_log.txt");
+    log_path.push("bin");
+    log_path.push("sh-to-telegram-log.txt");
+    log_path
+}
+
+pub fn log_this(msg: String) {
+    let log_path = log_path();
 
     let mut file = OpenOptions::new()
         .write(true)
