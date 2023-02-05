@@ -3,7 +3,6 @@ mod telegram;
 mod logger;
 
 use std::fs;
-use std::path::PathBuf;
 use std::path::Path;
 use std::io::prelude::*;
 use clap::Parser;
@@ -29,16 +28,15 @@ fn init_check() {
     bin_path.push("bin");
     match Path::new(&bin_path).exists() {
         true => {
-            println!("Bin dir found")
+            println!("binary dir found")
         }
         false => {
             fs::create_dir(&bin_path)
-                .expect("Could not create bin dir")
+                .expect("Could not create binary dir")
         }
     }
 
     let config_path = config_path();
-    let log_path = log_path();
     match Path::new(&config_path).exists() {
         true => {
             println!("Config file found")
@@ -53,9 +51,23 @@ fn init_check() {
             let mut file = fs::File::create(&config_path)
                 .expect("Failed Could not setup new configs.");
             if let Err(e) = writeln!(file, "{}", toml::to_string(&new_config).unwrap()) {
-                eprintln!("Couldn't write to file: {}", e);
+                eprintln!("Couldn't write to config file: {}", e);
             }
             panic!("New user. Please setup configs at {:?}", &config_path);
+        }
+    }
+
+    let log_path = log_path();
+    match Path::new(&log_path).exists() {
+        true => {
+            println!("Log file found")
+        }
+        false => {
+            let mut file = fs::File::create(&log_path)
+                .expect("Failed Could not setup new log file.");
+            if let Err(e) = write!(file, "") {
+                eprintln!("Couldn't write to log file: {}", e);
+            }
         }
     }
 }
