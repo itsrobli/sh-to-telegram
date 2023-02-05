@@ -2,8 +2,14 @@ mod config;
 mod telegram;
 mod logger;
 
+use std::fs;
+use std::path::PathBuf;
+use std::path::Path;
+use std::io::prelude::*;
 use clap::Parser;
-
+use toml;
+use crate::config::{Config, config_path, Telegram};
+use crate::logger::log_path;
 
 
 /// Parse from the CLI
@@ -18,7 +24,34 @@ struct Cli {
     file_path: String,
 }
 
+fn init_check() {
+    let config_path = config_path();
+    // println!("{}", &config_path.display());
+    let log_path = log_path();
+
+    match Path::new(&config_path).exists() {
+        true => {
+            println!("Config file found")
+        }
+        false => {
+            let new_config = Config {
+                telegram: Telegram {
+                    token: "".to_string(),
+                    current_chat_id: "".to_string()
+                }
+            };
+            let mut file = fs::File::create(&config_path)
+                .expect("Failed Could not setup new configs.");
+            if let Err(e) = writeln!(file, "{}", toml::to_string(&new_config).unwrap()) {
+                eprintln!("Couldn't write to file: {}", e);
+            }
+            panic!("New user. Please setup configs at {:?}", &config_path);
+        }
+    }
+}
+
 fn main() {
+    init_check();
     let cli = Cli::parse();
     let config = config::get_configs().expect("Couldn't get configs");
 
@@ -27,3 +60,4 @@ fn main() {
     let message = telegram::format_message(cli.has_moved, cli.file_path);
     telegram::send_message(message, token, current_chat_id);
 }
+

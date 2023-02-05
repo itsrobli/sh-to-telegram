@@ -1,15 +1,15 @@
 use dirs;
 use std::fs;
 use std::path::PathBuf;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use toml::de::Error;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Config {
     pub telegram: Telegram,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct Telegram {
     pub(crate) token: String,
     pub(crate) current_chat_id: String,
