@@ -25,10 +25,20 @@ struct Cli {
 }
 
 fn init_check() {
-    let config_path = config_path();
-    // println!("{}", &config_path.display());
-    let log_path = log_path();
+    let mut bin_path = dirs::home_dir().unwrap();
+    bin_path.push("bin");
+    match Path::new(&bin_path).exists() {
+        true => {
+            println!("Bin dir found")
+        }
+        false => {
+            fs::create_dir(&bin_path)
+                .expect("Could not create bin dir")
+        }
+    }
 
+    let config_path = config_path();
+    let log_path = log_path();
     match Path::new(&config_path).exists() {
         true => {
             println!("Config file found")
