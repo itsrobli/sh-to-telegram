@@ -1,27 +1,16 @@
 mod config;
 mod telegram;
 mod logger;
+mod cli;
 
 use std::fs;
 use std::path::Path;
 use std::io::prelude::*;
 use clap::Parser;
 use toml;
+use crate::cli::Commands;
 use crate::config::{Config, config_path, Telegram};
 use crate::logger::log_path;
-
-
-/// Parse from the CLI
-#[derive(Parser)]
-#[clap(author, version, about)]
-struct Cli {
-    /// Passed in from caller whether file was moved.
-    #[clap(short, long, action)]
-    has_moved: bool,
-    /// Path of file whether moved or not.
-    #[clap(short, long)]
-    file_path: String,
-}
 
 fn init_check() {
     let mut bin_path = dirs::home_dir().unwrap();
@@ -74,7 +63,7 @@ fn init_check() {
 
 fn main() {
     init_check();
-    let cli = Cli::parse();
+    let cli = cli::Cli::parse();
     let config = config::get_configs().expect("Couldn't get configs");
 
     let token = config.telegram.token;

@@ -5,7 +5,7 @@ use frankenstein::Api;
 use chrono::prelude::*;
 use crate::logger::log_this;
 
-pub fn send_message(msg: String, token: String, current_chat_id: String) {
+pub fn send_message(msg: String, token: &String, current_chat_id: &String) {
     let api = Api::new(token.as_str());
     let send_message_params = SendMessageParams::builder()
         .chat_id(current_chat_id)
