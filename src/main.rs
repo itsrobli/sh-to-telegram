@@ -8,7 +8,7 @@ use std::path::Path;
 use std::io::prelude::*;
 use clap::Parser;
 use toml;
-use crate::cli::{Commands, DownloadSubCommands, DownloadTask};
+use crate::cli::{Commands, DownloadTask};
 use crate::config::{Config, config_path, Telegram};
 use crate::logger::log_path;
 
