@@ -10,8 +10,14 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum Commands {
+    Download(DownloadSubCommands),
+    // Newtask(NewtaskSubCommands),
+}
+
+#[derive(Args)]
+pub struct DownloadSubCommands {
     #[command(subcommand)]
-    Download(DownloadTask),
+    download_commands: DownloadTask,
 }
 
 #[derive(Subcommand)]
@@ -32,7 +38,7 @@ pub struct StartedDownloadTask {
 #[derive(Args)]
 pub struct FinishedDownloadTask {
     /// Passed in from caller whether file was moved.
-    #[clap(short, long, action)]
+    #[clap(long, action)]
     pub has_moved: bool,
     /// Path of file whether moved or not.
     #[clap(short, long)]
