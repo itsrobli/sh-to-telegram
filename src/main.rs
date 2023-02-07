@@ -8,7 +8,7 @@ use std::path::Path;
 use std::io::prelude::*;
 use clap::Parser;
 use toml;
-use crate::cli::Commands;
+use crate::cli::{Commands, DownloadSubCommands, DownloadTask};
 use crate::config::{Config, config_path, Telegram};
 use crate::logger::log_path;
 
@@ -68,7 +68,24 @@ fn main() {
 
     let token = config.telegram.token;
     let current_chat_id = config.telegram.current_chat_id;
-    let message = telegram::format_message(cli.has_moved, cli.file_path);
-    telegram::send_message(message, token, current_chat_id);
+
+    match cli.command {
+        Commands::Download(command) => {
+            let download_command = command.download_commands;
+            match download_command {
+                DownloadTask::Finished(task) => {
+                    if task.has_moved && task.file_path.parse().unwrap() {
+                        let message = telegram::format_message(task.has_moved, &task.file_path);
+                        telegram::send_message(message, &token, &current_chat_id);
+                    }
+                    if task.file_path.parse().unwrap() {
+                        let message = telegram::format_message(false, &task.file_path);
+                        telegram::send_message(message, &token, &current_chat_id);
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
 }
 

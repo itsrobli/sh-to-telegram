@@ -5,7 +5,7 @@ use clap::{Args, Parser, Subcommand};
 #[clap(author, version, about)]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Option<Commands>,
+    pub command: Commands,
 }
 
 #[derive(Subcommand)]
@@ -17,7 +17,7 @@ pub enum Commands {
 #[derive(Args)]
 pub struct DownloadSubCommands {
     #[command(subcommand)]
-    download_commands: DownloadTask,
+    pub(crate) download_commands: DownloadTask,
 }
 
 #[derive(Subcommand)]
