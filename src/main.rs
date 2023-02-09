@@ -1,16 +1,16 @@
-mod config;
-mod telegram;
-mod logger;
 mod cli;
+mod config;
+mod logger;
+mod telegram;
 
-use std::fs;
-use std::path::Path;
-use std::io::prelude::*;
-use clap::Parser;
-use toml;
 use crate::cli::{Commands, DownloadTask};
-use crate::config::{Config, config_path, Telegram};
+use crate::config::{config_path, Config, Telegram};
 use crate::logger::log_path;
+use clap::Parser;
+use std::fs;
+use std::io::prelude::*;
+use std::path::Path;
+use toml;
 
 fn init_check() {
     let mut bin_path = dirs::home_dir().unwrap();
@@ -19,10 +19,7 @@ fn init_check() {
         true => {
             println!("binary dir found")
         }
-        false => {
-            fs::create_dir(&bin_path)
-                .expect("Could not create binary dir")
-        }
+        false => fs::create_dir(&bin_path).expect("Could not create binary dir"),
     }
 
     let config_path = config_path();
@@ -34,11 +31,11 @@ fn init_check() {
             let new_config = Config {
                 telegram: Telegram {
                     token: "".to_string(),
-                    current_chat_id: "".to_string()
-                }
+                    current_chat_id: "".to_string(),
+                },
             };
-            let mut file = fs::File::create(&config_path)
-                .expect("Failed Could not setup new configs.");
+            let mut file =
+                fs::File::create(&config_path).expect("Failed Could not setup new configs.");
             if let Err(e) = writeln!(file, "{}", toml::to_string(&new_config).unwrap()) {
                 eprintln!("Couldn't write to config file: {}", e);
             }
@@ -52,8 +49,8 @@ fn init_check() {
             println!("Log file found")
         }
         false => {
-            let mut file = fs::File::create(&log_path)
-                .expect("Failed Could not setup new log file.");
+            let mut file =
+                fs::File::create(&log_path).expect("Failed Could not setup new log file.");
             if let Err(e) = write!(file, "") {
                 eprintln!("Couldn't write to log file: {}", e);
             }
@@ -77,26 +74,22 @@ fn main() {
                     if task.has_moved {
                         let message = telegram::format_message_download_finished(
                             task.has_moved,
-                            &task.file_path
+                            &task.file_path,
                         );
                         telegram::send_message(message, &token, &current_chat_id);
-                    }
-                    else {
+                    } else {
                         let message = telegram::format_message_download_finished(
                             false,
-                            &task.file_path
+                            &task.file_path,
                         );
                         telegram::send_message(message, &token, &current_chat_id);
                     }
                 }
                 DownloadTask::Started(task) => {
-                    let message = telegram::format_message_download_started(
-                        &task.file_path
-                    );
+                    let message = telegram::format_message_download_started(&task.file_path);
                     telegram::send_message(message, &token, &current_chat_id);
                 }
             }
         }
     }
 }
-

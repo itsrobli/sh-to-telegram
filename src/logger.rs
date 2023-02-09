@@ -1,8 +1,8 @@
+use chrono::prelude::*;
 use dirs;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::path::PathBuf;
-use chrono::prelude::*;
 
 pub fn log_path() -> PathBuf {
     let mut log_path = dirs::home_dir().unwrap();
