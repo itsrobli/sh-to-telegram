@@ -74,14 +74,14 @@ fn main() {
             let download_command = command.download_commands;
             match download_command {
                 DownloadTask::Finished(task) => {
-                    if task.has_moved && task.file_path.parse().unwrap() {
+                    if task.has_moved {
                         let message = telegram::format_message_download_finished(
                             task.has_moved,
                             &task.file_path
                         );
                         telegram::send_message(message, &token, &current_chat_id);
                     }
-                    if task.file_path.parse().unwrap() {
+                    else {
                         let message = telegram::format_message_download_finished(
                             false,
                             &task.file_path
@@ -90,12 +90,10 @@ fn main() {
                     }
                 }
                 DownloadTask::Started(task) => {
-                    if task.file_path.parse().unwrap() {
-                        let message = telegram::format_message_download_started(
-                            &task.file_path
-                        );
-                        telegram::send_message(message, &token, &current_chat_id);
-                    }
+                    let message = telegram::format_message_download_started(
+                        &task.file_path
+                    );
+                    telegram::send_message(message, &token, &current_chat_id);
                 }
             }
         }
