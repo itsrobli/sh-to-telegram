@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](https://semver.org).
 
+## [0.3.0] - 2023-02-09
+
+Update CLI to accept more commands and change location of configs.
+
 ## [0.2.1] - 2022-08-04
 
 Change log location to right place.
