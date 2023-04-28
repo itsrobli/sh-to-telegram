@@ -40,6 +40,12 @@ impl Telegram {
     }
 }
 
+impl Default for Telegram {
+    fn default() -> Self {
+        Telegram::new()
+    }
+}
+
 
 pub fn config_path() -> PathBuf {
     let mut config_path = dirs::home_dir().unwrap();
