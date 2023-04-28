@@ -4,16 +4,33 @@ use std::fs;
 use std::path::PathBuf;
 use toml::de::Error;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq)]
 pub struct Config {
     pub telegram: Telegram,
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq)]
 pub struct Telegram {
     pub(crate) token: String,
     pub(crate) current_chat_id: String,
 }
+
+impl Config {
+    pub fn new() -> Result<Config, Error> {
+        let config_path = config_path();
+
+        match fs::read_to_string(&config_path) {
+            Ok(contents) => {
+                let package_info: Config = toml::from_str(&*contents)?;
+                Ok(package_info)
+            }
+            Err(_) => {
+                panic!("Could not setup new configs.");
+            }
+        }
+    }
+}
+
 
 pub fn config_path() -> PathBuf {
     let mut config_path = dirs::home_dir().unwrap();
@@ -33,5 +50,17 @@ pub fn get_configs() -> Result<Config, Error> {
         Err(_) => {
             panic!("Could not setup new configs.");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[allow(unused_imports)]
+    use crate::message::*;
+    use crate::types::{PrivMsg, Target};
+
+    #[test]
+    fn test_config_file_blank() {
+
     }
 }
