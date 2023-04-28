@@ -31,6 +31,15 @@ impl Config {
     }
 }
 
+impl Telegram {
+    pub fn new() -> Telegram {
+        Telegram {
+            token: "".to_string(),
+            current_chat_id: "".to_string(),
+        }
+    }
+}
+
 
 pub fn config_path() -> PathBuf {
     let mut config_path = dirs::home_dir().unwrap();
