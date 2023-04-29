@@ -4,20 +4,20 @@ use std::fs;
 use std::path::PathBuf;
 use toml::de::Error;
 
-#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq, Clone)]
 pub struct Config {
     pub telegram: Telegram,
 }
 
-#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq, Clone)]
 pub struct Telegram {
-    pub(crate) token: String,
-    pub(crate) current_chat_id: String,
+    pub token: String,
+    pub current_chat_id: String,
 }
 
 impl Config {
-    pub fn new() -> Result<Config, Error> {
-        let config_path = config_path();
+    pub fn new(path: Option<PathBuf>) -> Result<Config, Error> {
+        let config_path = path.unwrap_or(config_path());
 
         match fs::read_to_string(&config_path) {
             Ok(contents) => {

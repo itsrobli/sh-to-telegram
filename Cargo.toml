@@ -8,6 +8,14 @@ readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "lib"
+path = "src/lib/mod.rs"
+
+[[bin]]
+name = "sh-to-telegram"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.2.4", features = ["derive"] }
 frankenstein = "0.25.0"

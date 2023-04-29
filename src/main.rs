@@ -1,16 +1,12 @@
-mod cli;
-mod config;
-mod logger;
-mod telegram;
-
-use crate::cli::{Commands, DownloadTask};
-use crate::config::{config_path, Config, Telegram};
-use crate::logger::log_path;
+use lib::cli::{Cli, Commands, DownloadTask};
+use lib::config::{config_path, Config, Telegram, get_configs};
+use lib::logger::log_path;
 use clap::Parser;
 use std::fs;
 use std::io::prelude::*;
 use std::path::Path;
 use toml;
+use lib::telegram;
 
 fn init_check() {
     let mut bin_path = dirs::home_dir().unwrap();
@@ -60,8 +56,8 @@ fn init_check() {
 
 fn main() {
     init_check();
-    let cli = cli::Cli::parse();
-    let config = config::get_configs().expect("Couldn't get configs");
+    let cli = Cli::parse();
+    let config = get_configs().expect("Couldn't get configs");
 
     let token = config.telegram.token;
     let current_chat_id = config.telegram.current_chat_id;

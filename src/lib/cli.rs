@@ -17,7 +17,7 @@ pub enum Commands {
 #[derive(Args)]
 pub struct DownloadSubCommands {
     #[command(subcommand)]
-    pub(crate) download_commands: DownloadTask,
+    pub download_commands: DownloadTask,
 }
 
 #[derive(Subcommand)]
