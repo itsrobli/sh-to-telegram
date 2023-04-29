@@ -24,8 +24,8 @@ impl Config {
                 let package_info: Config = toml::from_str(&*contents)?;
                 Ok(package_info)
             }
-            Err(_) => {
-                panic!("Could not setup new configs.");
+            Err(err) => {
+                panic!("Could not setup new configs. {err}");
             }
         }
     }
@@ -71,8 +71,6 @@ pub fn get_configs() -> Result<Config, Error> {
 #[cfg(test)]
 mod tests {
     #[allow(unused_imports)]
-    use crate::message::*;
-    use crate::types::{PrivMsg, Target};
 
     #[test]
     fn test_config_file_blank() {
