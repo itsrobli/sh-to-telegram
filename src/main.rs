@@ -1,5 +1,5 @@
 use lib::cli::{Cli, Commands, DownloadTask};
-use lib::config::{config_path, Config, Telegram, get_configs};
+use lib::config::{Config, Telegram};
 use lib::logger::log_path;
 use clap::Parser;
 use std::fs;
@@ -18,7 +18,7 @@ fn init_check() {
         false => fs::create_dir(&bin_path).expect("Could not create binary dir"),
     }
 
-    let config_path = config_path();
+    let config_path = Config::default_config_path();
     match Path::new(&config_path).exists() {
         true => {
             println!("Config file found")
@@ -57,7 +57,7 @@ fn init_check() {
 fn main() {
     init_check();
     let cli = Cli::parse();
-    let config = get_configs().expect("Couldn't get configs");
+    let config = Config::new(None).expect("Couldn't get configs");
 
     let token = config.telegram.token;
     let current_chat_id = config.telegram.current_chat_id;

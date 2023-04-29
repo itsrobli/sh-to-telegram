@@ -4,6 +4,8 @@ use std::fs;
 use std::path::PathBuf;
 use toml::de::Error;
 
+const DEFAULT_RELATIVE_CONFIG_PATH: &str = "bin/sh-to-telegram.toml";
+
 #[derive(Debug, Deserialize, Serialize, PartialOrd, PartialEq, Clone)]
 pub struct Config {
     pub telegram: Telegram,
@@ -17,7 +19,7 @@ pub struct Telegram {
 
 impl Config {
     pub fn new(path: Option<PathBuf>) -> Result<Config, Error> {
-        let config_path = path.unwrap_or(config_path());
+        let config_path = path.unwrap_or(Config::default_config_path());
 
         match fs::read_to_string(&config_path) {
             Ok(contents) => {
@@ -28,6 +30,12 @@ impl Config {
                 panic!("Could not setup new configs. {err}");
             }
         }
+    }
+
+    pub fn default_config_path() -> PathBuf {
+        let mut default_config_path = dirs::home_dir().unwrap();
+        default_config_path.push(PathBuf::from(DEFAULT_RELATIVE_CONFIG_PATH));
+        default_config_path
     }
 }
 
@@ -43,28 +51,6 @@ impl Telegram {
 impl Default for Telegram {
     fn default() -> Self {
         Telegram::new()
-    }
-}
-
-
-pub fn config_path() -> PathBuf {
-    let mut config_path = dirs::home_dir().unwrap();
-    config_path.push("bin");
-    config_path.push("sh-to-telegram.toml");
-    config_path
-}
-
-pub fn get_configs() -> Result<Config, Error> {
-    let config_path = config_path();
-
-    match fs::read_to_string(&config_path) {
-        Ok(contents) => {
-            let package_info: Config = toml::from_str(&*contents)?;
-            Ok(package_info)
-        }
-        Err(_) => {
-            panic!("Could not setup new configs.");
-        }
     }
 }
 
