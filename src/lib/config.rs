@@ -88,8 +88,8 @@ pub enum ConfigError {
 }
 
 impl Telegram {
-    pub fn new() -> Telegram {
-        Telegram {
+    pub fn new() -> Self {
+        Self {
             token: "".to_string(),
             current_chat_id: "".to_string(),
         }
@@ -98,7 +98,7 @@ impl Telegram {
 
 impl Default for Telegram {
     fn default() -> Self {
-        Telegram::new()
+        Self::new()
     }
 }
 
