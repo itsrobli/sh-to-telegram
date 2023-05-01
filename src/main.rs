@@ -5,7 +5,6 @@ use clap::Parser;
 use std::fs;
 use std::io::prelude::*;
 use std::path::Path;
-use toml;
 use lib::telegram;
 
 fn init_check() {
@@ -50,16 +49,8 @@ fn main() {
                         println!("Then run this program again. \n Goodbye!");
                         std::process::exit(1)
                     }
-                    Err(ConfigError::HomePathNotFound) => {
-                        println!("{}", ConfigError::HomePathNotFound);
-                        std::process::exit(1)
-                    }
-                    Err(ConfigError::FileCouldNotBeCreated) => {
-                        println!("{}", ConfigError::FileCouldNotBeCreated);
-                        std::process::exit(1)
-                    }
-                    Err(_) => {
-                        println!("{}", ConfigError::Unknown);
+                    Err(err) => {
+                        println!("{}", err);
                         std::process::exit(1)
                     }
                 }
