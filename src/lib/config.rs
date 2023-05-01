@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
-use toml::de::Error;
 use std::io::prelude::*;
 use thiserror::Error;
 
@@ -26,9 +25,9 @@ impl Config {
             Config::default_config_path()?
         );
 
-        match fs::read_to_string(&config_path) {
+        match fs::read_to_string(config_path) {
             Ok(contents) => {
-                let package_info: Config = toml::from_str(&*contents)
+                let package_info: Config = toml::from_str(&contents)
                     .map_err(
                         |_| ConfigError::FileParseError
                     )?;

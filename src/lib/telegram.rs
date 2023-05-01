@@ -30,7 +30,7 @@ pub fn format_message_download_finished(has_moved: bool, file_path: &String) -> 
         message.push_str(now.format("%Y/%m/%d").to_string().as_str());
         log_this("no-move ".to_owned() + filename)
     }
-    return message;
+    message
 }
 
 pub fn format_message_download_started(file_path: &String) -> String {
@@ -39,5 +39,5 @@ pub fn format_message_download_started(file_path: &String) -> String {
     message.push_str("started downloading ");
     let now = Local::now();
     message.push_str(now.format("%Y/%m/%d").to_string().as_str());
-    return message;
+    message
 }

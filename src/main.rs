@@ -1,5 +1,5 @@
 use lib::cli::{Cli, Commands, DownloadTask};
-use lib::config::{Config, ConfigError, Telegram};
+use lib::config::{Config, ConfigError};
 use lib::logger::log_path;
 use clap::Parser;
 use std::fs;

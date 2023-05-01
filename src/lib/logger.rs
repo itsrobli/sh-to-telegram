@@ -27,6 +27,5 @@ pub fn log_this(msg: String) {
 
 fn log_formatter(msg: String) -> String {
     let now = Local::now().format("%Y/%m/%d").to_string();
-    let log_line = "[".to_owned() + &*now + "] " + &*msg;
-    return log_line;
+    "[".to_owned() + &*now + "] " + &*msg
 }
