@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use lib::config;
 use lib::config::Telegram;
+use std::path::PathBuf;
 
 #[test]
 fn test_file_good() {
@@ -8,7 +8,7 @@ fn test_file_good() {
         telegram: Telegram {
             token: "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11".to_string(),
             current_chat_id: "123456789".to_string(),
-        }
+        },
     };
 
     const FILEPATH: &str = "tests/config/sh-to-telegram.toml";
