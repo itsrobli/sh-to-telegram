@@ -14,7 +14,7 @@ fn test_file_good() {
     const FILEPATH: &str = "tests/config/sh-to-telegram.toml";
     let config_path = PathBuf::from(FILEPATH);
     println!("{config_path:?}");
-    let config = config::Config::new(Some(config_path));
+    let config = config::Config::from_file(Some(config_path));
 
     assert_eq!(expected_config, config.unwrap());
 }

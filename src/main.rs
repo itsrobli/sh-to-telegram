@@ -1,5 +1,5 @@
 use lib::cli::{Cli, Commands, DownloadTask};
-use lib::config::{Config, Telegram};
+use lib::config::{Config, ConfigError, Telegram};
 use lib::logger::log_path;
 use clap::Parser;
 use std::fs;
@@ -18,26 +18,6 @@ fn init_check() {
         false => fs::create_dir(&bin_path).expect("Could not create binary dir"),
     }
 
-    let config_path = Config::default_config_path();
-    match Path::new(&config_path).exists() {
-        true => {
-            println!("Config file found")
-        }
-        false => {
-            let new_config = Config {
-                telegram: Telegram {
-                    token: "".to_string(),
-                    current_chat_id: "".to_string(),
-                },
-            };
-            let mut file =
-                fs::File::create(&config_path).expect("Failed Could not setup new configs.");
-            if let Err(e) = writeln!(file, "{}", toml::to_string(&new_config).unwrap()) {
-                eprintln!("Couldn't write to config file: {}", e);
-            }
-            panic!("New user. Please setup configs at {:?}", &config_path);
-        }
-    }
 
     let log_path = log_path();
     match Path::new(&log_path).exists() {
@@ -57,7 +37,38 @@ fn init_check() {
 fn main() {
     init_check();
     let cli = Cli::parse();
-    let config = Config::new(None).expect("Couldn't get configs");
+    let config =
+        match Config::from_file(None) {
+            Ok(config) => {
+                println!("Config file found...continuing...");
+                config
+            },
+            Err(ConfigError::FileNotFound) => {
+                match Config::create_template_config_file() {
+                    Ok(_) => {
+                        println!("New user. Please setup configs in you user dir {}", Config::print_default_config_path());
+                        println!("Then run this program again. \n Goodbye!");
+                        std::process::exit(1)
+                    }
+                    Err(ConfigError::HomePathNotFound) => {
+                        println!("{}", ConfigError::HomePathNotFound);
+                        std::process::exit(1)
+                    }
+                    Err(ConfigError::FileCouldNotBeCreated) => {
+                        println!("{}", ConfigError::FileCouldNotBeCreated);
+                        std::process::exit(1)
+                    }
+                    Err(_) => {
+                        println!("{}", ConfigError::Unknown);
+                        std::process::exit(1)
+                    }
+                }
+            }
+            Err(_) => {
+                println!("{}", ConfigError::Unknown);
+                std::process::exit(1)
+            }
+        };
 
     let token = config.telegram.token;
     let current_chat_id = config.telegram.current_chat_id;
