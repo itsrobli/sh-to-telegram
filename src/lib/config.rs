@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use toml::de::Error;
+use thiserror::Error;
 
 const DEFAULT_RELATIVE_CONFIG_PATH: &str = "bin/sh-to-telegram.toml";
 
@@ -18,25 +19,41 @@ pub struct Telegram {
 }
 
 impl Config {
-    pub fn new(path: Option<PathBuf>) -> Result<Config, Error> {
-        let config_path = path.unwrap_or(Config::default_config_path());
+    pub fn new(path: Option<PathBuf>) -> Result<Config, ConfigError> {
+        let config_path = path.unwrap_or(
+            Config::default_config_path()
+                .ok_or(ConfigError::FileNotFound)?
+        );
 
         match fs::read_to_string(&config_path) {
             Ok(contents) => {
-                let package_info: Config = toml::from_str(&*contents)?;
+                let package_info: Config = toml::from_str(&*contents)
+                    .map_err(
+                        |_| ConfigError::FileParseError
+                    )?;
                 Ok(package_info)
             }
-            Err(err) => {
-                panic!("Could not setup new configs. {err}");
+            Err(_) => {
+                Err(ConfigError::FileReadError)
             }
         }
     }
 
-    pub fn default_config_path() -> PathBuf {
-        let mut default_config_path = dirs::home_dir().expect("Fatal error:cannot determine home folder on your system.");
+    pub fn default_config_path() -> Option<PathBuf> {
+        let mut default_config_path = dirs::home_dir()?;
         default_config_path.push(PathBuf::from(DEFAULT_RELATIVE_CONFIG_PATH));
-        default_config_path
+        Some(default_config_path)
     }
+}
+
+#[derive(Error, Debug)]
+pub enum ConfigError {
+    #[error("config file not found")]
+    FileNotFound,
+    #[error("config file could not be parsed")]
+    FileParseError,
+    #[error("config file could not be read")]
+    FileReadError,
 }
 
 impl Telegram {

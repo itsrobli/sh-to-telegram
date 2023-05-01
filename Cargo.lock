@@ -738,6 +738,7 @@ dependencies = [
  "dirs",
  "frankenstein",
  "serde",
+ "thiserror",
  "toml",
 ]
 
