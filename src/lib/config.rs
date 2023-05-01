@@ -33,7 +33,7 @@ impl Config {
     }
 
     pub fn default_config_path() -> PathBuf {
-        let mut default_config_path = dirs::home_dir().unwrap();
+        let mut default_config_path = dirs::home_dir().expect("Fatal error:cannot determine home folder on your system.");
         default_config_path.push(PathBuf::from(DEFAULT_RELATIVE_CONFIG_PATH));
         default_config_path
     }
