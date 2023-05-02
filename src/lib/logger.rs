@@ -3,6 +3,44 @@ use dirs;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 use std::path::PathBuf;
+use thiserror::Error;
+
+const DEFAULT_RELATIVE_LOG_PATH: &str = "bin/sh-to-telegram-log.txt";
+
+#[derive(Debug, PartialOrd, PartialEq, Clone)]
+pub struct LogFile;
+
+impl LogFile {
+    pub fn default_path() -> Result<PathBuf, LogFileError> {
+        let mut default_path = dirs::home_dir().ok_or(LogFileError::HomePathNotFound)?;
+        default_path.push(PathBuf::from(DEFAULT_RELATIVE_LOG_PATH));
+        Ok(default_path)
+    }
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Clone)]
+pub enum LogFileState {
+    Exists,
+    NotExists,
+}
+
+#[derive(Error, Debug)]
+pub enum LogFileError {
+    #[error("log file not found")]
+    FileNotFound,
+    #[error("log file not able to be created")]
+    FileCouldNotBeCreated,
+    #[error("user home path can't be determined")]
+    HomePathNotFound,
+    #[error("binary path can't be created")]
+    BinPathNotFound,
+    #[error("log file could not be parsed")]
+    FileParseError,
+    #[error("log file could not be read")]
+    FileReadError,
+    #[error("log file unknown error")]
+    Unknown,
+}
 
 pub fn log_path() -> PathBuf {
     let mut log_path = dirs::home_dir().unwrap();

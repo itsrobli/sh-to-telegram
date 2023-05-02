@@ -70,7 +70,7 @@ impl Default for Config {
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Clone)]
-pub enum ConfigState {
+pub enum ConfigFileState {
     Exists,
     NotExists,
 }
