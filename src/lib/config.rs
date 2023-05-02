@@ -21,7 +21,7 @@ pub struct Telegram {
 
 impl Config {
     pub fn from_file(path: Option<PathBuf>) -> Result<Config, ConfigError> {
-        let config_path = path.unwrap_or(Config::default_config_path()?);
+        let config_path = path.unwrap_or(Config::default_path()?);
 
         match fs::read_to_string(config_path) {
             Ok(contents) => {
@@ -42,15 +42,15 @@ impl Config {
         }
     }
 
-    pub fn default_config_path() -> Result<PathBuf, ConfigError> {
-        let mut default_config_path = dirs::home_dir().ok_or(ConfigError::HomePathNotFound)?;
-        default_config_path.push(PathBuf::from(DEFAULT_RELATIVE_CONFIG_PATH));
-        Ok(default_config_path)
+    pub fn default_path() -> Result<PathBuf, ConfigError> {
+        let mut default_path = dirs::home_dir().ok_or(ConfigError::HomePathNotFound)?;
+        default_path.push(PathBuf::from(DEFAULT_RELATIVE_CONFIG_PATH));
+        Ok(default_path)
     }
 
     pub fn create_template_config_file() -> Result<(), ConfigError> {
         let new_config = Config::default();
-        let mut file = fs::File::create(Config::default_config_path()?)
+        let mut file = fs::File::create(Config::default_path()?)
             .map_err(|_| ConfigError::FileCouldNotBeCreated)?;
         if let Err(_) = writeln!(file, "{}", toml::to_string(&new_config).unwrap()) {
             return Err(ConfigError::FileCouldNotBeCreated);
@@ -67,6 +67,12 @@ impl Default for Config {
     fn default() -> Self {
         Config::new()
     }
+}
+
+#[derive(Debug, PartialOrd, PartialEq, Clone)]
+pub enum ConfigState {
+    Exists,
+    NotExists,
 }
 
 #[derive(Error, Debug)]
