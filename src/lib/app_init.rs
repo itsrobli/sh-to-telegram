@@ -39,7 +39,10 @@ impl App {
         match (&self.config_file_state, &self.log_file_state) {
             (ConfigFileState::Exists, LogFileState::Exists) => Ok(()),
             (ConfigFileState::Exists, LogFileState::NotExists) => {
-                todo!()
+                match App::handle_no_log_file() {
+                    Ok(_) => Ok(()),
+                    Err(err) => Err(AppError::LogFile(err))
+                }
             },
             (ConfigFileState::NotExists, LogFileState::Exists) => {
                 match App::handle_no_config_file() {
@@ -68,6 +71,16 @@ impl App {
             }
         }
     }
+    fn handle_no_log_file() -> Result<(), LogFileError> {
+        LogFile::create_template_log_file()?;
+        Ok(())
+    }
+}
+
+impl Default for App {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 #[derive(Error, Debug)]
@@ -76,6 +89,8 @@ pub enum AppError {
     NeedsOffAndOn,
     #[error("config error when initiating app")]
     Config(ConfigError),
+    #[error("log file error when initiating app")]
+    LogFile(LogFileError),
     #[error("app unknown error")]
     Unknown,
 }
