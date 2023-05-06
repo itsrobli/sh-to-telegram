@@ -108,10 +108,28 @@ impl Default for App {
 pub enum AppError {
     #[error("app needs to shutdown and be re-run")]
     NeedsOffAndOn,
-    #[error("config error when initiating app")]
+    #[error("config error when initiating app. ConfigError: {0:?}")]
     Config(ConfigError),
-    #[error("log file error when initiating app")]
+    #[error("log file error when initiating app. LogFileError: {0:?}")]
     LogFile(LogFileError),
     #[error("app unknown error")]
     Unknown,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::app_init::App;
+    use crate::config::ConfigFileState;
+    use crate::logger::LogFileState;
+
+    #[allow(unused_imports)]
+
+    #[test]
+    fn app_has_all_file() {
+        let app_state_good = App {
+            config_file_state: ConfigFileState::Exists,
+            log_file_state: LogFileState::Exists,
+        };
+
+    }
 }
