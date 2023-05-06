@@ -6,6 +6,7 @@ use lib::telegram;
 use std::fs;
 use std::io::prelude::*;
 use std::path::Path;
+use lib::app_init::{App, AppError};
 
 fn init_check() {
     let mut bin_path = dirs::home_dir().unwrap();
@@ -33,27 +34,22 @@ fn init_check() {
 }
 
 fn main() {
-    init_check();
+    let mut app = App::default();
+    match app.init() {
+        Ok(_) => {
+            println!("App startup successful!")
+        }
+        Err(err) => {
+            println!("{err}");
+            std::process::exit(1)
+        }
+    }
     let cli = Cli::parse();
     let config = match Config::from_file(None) {
         Ok(config) => {
             println!("Config file found...continuing...");
             config
         }
-        Err(ConfigError::FileNotFound) => match Config::create_template_config_file() {
-            Ok(_) => {
-                println!(
-                    "New user. Please setup configs in you user dir {}",
-                    Config::print_default_config_path()
-                );
-                println!("Then run this program again. \n Goodbye!");
-                std::process::exit(1)
-            }
-            Err(err) => {
-                println!("{}", err);
-                std::process::exit(1)
-            }
-        },
         Err(_) => {
             println!("{}", ConfigError::Unknown);
             std::process::exit(1)
