@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 use crate::config::{Config, ConfigError, ConfigFileState};
 use crate::logger::{LogFile, LogFileError, LogFileState};
+use thiserror::Error;
 
 pub struct App {
     config_file_state: ConfigFileState,
@@ -34,4 +35,24 @@ impl App {
             log_file_state,
         }
     }
+    fn init(&mut self) -> Result<(), AppError> {
+        match (&self.config_file_state, &self.log_file_state) {
+            (ConfigFileState::Exists, LogFileState::Exists) => Ok(()),
+            (ConfigFileState::Exists, LogFileState::NotExists) => {
+                todo!()
+            },
+            (ConfigFileState::NotExists, LogFileState::Exists) => {
+                todo!()
+            },
+            (ConfigFileState::NotExists, LogFileState::NotExists) => {
+                todo!()
+            },
+        }
+    }
+}
+
+#[derive(Error, Debug)]
+pub enum AppError {
+    #[error("app needs to shutdown and be re-run")]
+    NeedsOffAndOn,
 }
