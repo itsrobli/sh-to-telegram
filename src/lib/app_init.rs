@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use crate::config::{Config, ConfigError, ConfigFileState};
 use crate::logger::{LogFile, LogFileError, LogFileState};
 use thiserror::Error;
@@ -10,9 +9,7 @@ pub struct App {
 
 impl App {
     pub fn new() -> Self {
-        let mut config_file_state = ConfigFileState::NotExists;
-        let mut log_file_state = LogFileState::NotExists;
-        config_file_state = match Config::default_path() {
+        let config_file_state = match Config::default_path() {
             Ok(path) => {
                 match path.exists() {
                     true => ConfigFileState::Exists,
@@ -21,7 +18,7 @@ impl App {
             }
             Err(_) => ConfigFileState::NotExists
         };
-        log_file_state = match LogFile::default_path() {
+        let log_file_state = match LogFile::default_path() {
             Ok(path) => {
                 match path.exists() {
                     true => LogFileState::Exists,
@@ -104,7 +101,7 @@ impl Default for App {
     }
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum AppError {
     #[error("app needs to shutdown and be re-run")]
     NeedsOffAndOn,
@@ -126,10 +123,10 @@ mod tests {
 
     #[test]
     fn app_has_all_file() {
-        let app_state_good = App {
+        let mut app_state = App {
             config_file_state: ConfigFileState::Exists,
             log_file_state: LogFileState::Exists,
         };
-
+        assert_eq!(app_state.init().unwrap(), ());
     }
 }

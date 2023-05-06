@@ -3,7 +3,6 @@ use std::fs;
 use std::io::prelude::*;
 use dirs;
 use std::fs::OpenOptions;
-use std::io::prelude::*;
 use std::path::PathBuf;
 use thiserror::Error;
 
@@ -34,7 +33,7 @@ pub enum LogFileState {
     NotExists,
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum LogFileError {
     #[error("log file not found")]
     FileNotFound,

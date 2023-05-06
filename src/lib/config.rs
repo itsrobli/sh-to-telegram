@@ -75,7 +75,7 @@ pub enum ConfigFileState {
     NotExists,
 }
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, PartialEq)]
 pub enum ConfigError {
     #[error("config file not found")]
     FileNotFound,
