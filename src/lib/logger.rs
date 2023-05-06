@@ -1,4 +1,6 @@
 use chrono::prelude::*;
+use std::fs;
+use std::io::prelude::*;
 use dirs;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
@@ -15,6 +17,14 @@ impl LogFile {
         let mut default_path = dirs::home_dir().ok_or(LogFileError::HomePathNotFound)?;
         default_path.push(PathBuf::from(DEFAULT_RELATIVE_LOG_PATH));
         Ok(default_path)
+    }
+    pub fn create_template_log_file() -> Result<(), LogFileError> {
+        let mut file = fs::File::create(LogFile::default_path()?)
+            .map_err(|_| LogFileError::FileCouldNotBeCreated)?;
+        if let Err(_) = writeln!(file, "") {
+            return Err(LogFileError::FileCouldNotBeCreated);
+        }
+        Ok(())
     }
 }
 
