@@ -51,7 +51,13 @@ impl App {
                 }
             },
             (ConfigFileState::NotExists, LogFileState::NotExists) => {
-                todo!()
+                match (App::handle_no_config_file(), App::handle_no_log_file()) {
+                    (Ok(_), Ok(_)) => Err(AppError::NeedsOffAndOn),
+                    (Err(err), Ok(_)) => Err(AppError::Config(err)),
+                    (Ok(_), Err(err)) => Err(AppError::LogFile(err)),
+                    // TODO: Need to go into the ConfigError/LogFileError and give user more troubleshooting hints.
+                    (Err(_), Err(_)) => Err(AppError::Unknown)
+                }
             },
         }
     }
