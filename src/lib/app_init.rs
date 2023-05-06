@@ -119,8 +119,6 @@ mod tests {
     use crate::config::ConfigFileState;
     use crate::logger::LogFileState;
 
-    #[allow(unused_imports)]
-
     #[test]
     fn app_has_all_file() {
         let mut app_state = App {

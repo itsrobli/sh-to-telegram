@@ -6,7 +6,7 @@ use lib::telegram;
 use std::fs;
 use std::io::prelude::*;
 use std::path::Path;
-use lib::app_init::{App, AppError};
+use lib::app_init::App;
 
 fn init_check() {
     let mut bin_path = dirs::home_dir().unwrap();
