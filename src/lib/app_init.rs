@@ -40,21 +40,36 @@ impl App {
             (ConfigFileState::Exists, LogFileState::Exists) => Ok(()),
             (ConfigFileState::Exists, LogFileState::NotExists) => {
                 match App::handle_no_log_file() {
-                    Ok(_) => Ok(()),
+                    Ok(_) => {
+                        self.log_file_state = LogFileState::Exists;
+                        Ok(())
+                    },
                     Err(err) => Err(AppError::LogFile(err))
                 }
             },
             (ConfigFileState::NotExists, LogFileState::Exists) => {
                 match App::handle_no_config_file() {
-                    Ok(_) => Err(AppError::NeedsOffAndOn),
+                    Ok(_) => {
+                        self.config_file_state = ConfigFileState::Exists;
+                        Err(AppError::NeedsOffAndOn)
+                    },
                     Err(err) => Err(AppError::Config(err))
                 }
             },
             (ConfigFileState::NotExists, LogFileState::NotExists) => {
                 match (App::handle_no_config_file(), App::handle_no_log_file()) {
-                    (Ok(_), Ok(_)) => Err(AppError::NeedsOffAndOn),
-                    (Err(err), Ok(_)) => Err(AppError::Config(err)),
-                    (Ok(_), Err(err)) => Err(AppError::LogFile(err)),
+                    (Ok(_), Ok(_)) => {
+                        self.config_file_state = ConfigFileState::Exists;
+                        self.log_file_state = LogFileState::Exists;
+                        Err(AppError::NeedsOffAndOn)
+                    },
+                    (Err(err), Ok(_)) => {
+                        self.log_file_state = LogFileState::Exists;
+                        Err(AppError::Config(err))
+                    },
+                    (Ok(_), Err(err)) => {
+                        self.config_file_state = ConfigFileState::Exists;
+                        Err(AppError::LogFile(err)) },
                     // TODO: Need to go into the ConfigError/LogFileError and give user more troubleshooting hints.
                     (Err(_), Err(_)) => Err(AppError::Unknown)
                 }
