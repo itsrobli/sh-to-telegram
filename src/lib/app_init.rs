@@ -1,7 +1,12 @@
+use std::fs;
+use std::path::PathBuf;
 use crate::config::{Config, ConfigError, ConfigFileState};
 use crate::logger::{LogFile, LogFileError, LogFileState};
 use thiserror::Error;
 
+pub const DEFAULT_BIN_PATH: &str = "bin";
+
+#[derive(Debug, PartialOrd, PartialEq, Clone)]
 pub struct App {
     config_file_state: ConfigFileState,
     log_file_state: LogFileState,
@@ -32,45 +37,58 @@ impl App {
             log_file_state,
         }
     }
+    pub fn default_path() -> Result<PathBuf, AppError> {
+        let mut default_path = dirs::home_dir().ok_or(AppError::HomePathNotFound)?;
+        default_path.push(PathBuf::from(DEFAULT_BIN_PATH));
+        Ok(default_path)
+    }
     pub fn init(&mut self) -> Result<(), AppError> {
-        match (&self.config_file_state, &self.log_file_state) {
-            (ConfigFileState::Exists, LogFileState::Exists) => Ok(()),
-            (ConfigFileState::Exists, LogFileState::NotExists) => {
-                match App::handle_no_log_file() {
-                    Ok(_) => {
-                        self.log_file_state = LogFileState::Exists;
-                        Ok(())
-                    },
-                    Err(err) => Err(AppError::LogFile(err))
+        match App::default_path() {
+            Ok(path) => {
+                if !path.exists() {
+                    fs::create_dir(&path).map_err(|_| AppError::BinPathNotFound)?;
                 }
-            },
-            (ConfigFileState::NotExists, LogFileState::Exists) => {
-                match App::handle_no_config_file() {
-                    Ok(_) => {
-                        self.config_file_state = ConfigFileState::Exists;
-                        Err(AppError::NeedsOffAndOn)
+                match (&self.config_file_state, &self.log_file_state) {
+                    (ConfigFileState::Exists, LogFileState::Exists) => Ok(()),
+                    (ConfigFileState::Exists, LogFileState::NotExists) => {
+                        match App::handle_no_log_file() {
+                            Ok(_) => {
+                                self.log_file_state = LogFileState::Exists;
+                                Ok(())
+                            },
+                            Err(err) => Err(AppError::LogFile(err))
+                        }
                     },
-                    Err(err) => Err(AppError::Config(err))
+                    (ConfigFileState::NotExists, LogFileState::Exists) => {
+                        match App::handle_no_config_file() {
+                            Ok(_) => {
+                                self.config_file_state = ConfigFileState::Exists;
+                                Err(AppError::NeedsOffAndOn)
+                            },
+                            Err(err) => Err(AppError::Config(err))
+                        }
+                    },
+                    (ConfigFileState::NotExists, LogFileState::NotExists) => {
+                        match (App::handle_no_config_file(), App::handle_no_log_file()) {
+                            (Ok(_), Ok(_)) => {
+                                self.config_file_state = ConfigFileState::Exists;
+                                self.log_file_state = LogFileState::Exists;
+                                Err(AppError::NeedsOffAndOn)
+                            },
+                            (Err(err), Ok(_)) => {
+                                self.log_file_state = LogFileState::Exists;
+                                Err(AppError::Config(err))
+                            },
+                            (Ok(_), Err(err)) => {
+                                self.config_file_state = ConfigFileState::Exists;
+                                Err(AppError::LogFile(err)) },
+                            // TODO: Need to go into the ConfigError/LogFileError and give user more troubleshooting hints.
+                            (Err(_), Err(_)) => Err(AppError::Unknown)
+                        }
+                    },
                 }
-            },
-            (ConfigFileState::NotExists, LogFileState::NotExists) => {
-                match (App::handle_no_config_file(), App::handle_no_log_file()) {
-                    (Ok(_), Ok(_)) => {
-                        self.config_file_state = ConfigFileState::Exists;
-                        self.log_file_state = LogFileState::Exists;
-                        Err(AppError::NeedsOffAndOn)
-                    },
-                    (Err(err), Ok(_)) => {
-                        self.log_file_state = LogFileState::Exists;
-                        Err(AppError::Config(err))
-                    },
-                    (Ok(_), Err(err)) => {
-                        self.config_file_state = ConfigFileState::Exists;
-                        Err(AppError::LogFile(err)) },
-                    // TODO: Need to go into the ConfigError/LogFileError and give user more troubleshooting hints.
-                    (Err(_), Err(_)) => Err(AppError::Unknown)
-                }
-            },
+            }
+            Err(err) => Err(err)
         }
     }
     fn handle_no_config_file() -> Result<(), ConfigError> {
@@ -105,6 +123,10 @@ impl Default for App {
 pub enum AppError {
     #[error("app needs to shutdown and be re-run")]
     NeedsOffAndOn,
+    #[error("user home path can't be determined")]
+    HomePathNotFound,
+    #[error("binary path can't be created")]
+    BinPathNotFound,
     #[error("config error when initiating app. ConfigError: {0:?}")]
     Config(ConfigError),
     #[error("log file error when initiating app. LogFileError: {0:?}")]

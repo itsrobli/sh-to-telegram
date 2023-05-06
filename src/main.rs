@@ -8,31 +8,6 @@ use std::io::prelude::*;
 use std::path::Path;
 use lib::app_init::App;
 
-fn init_check() {
-    let mut bin_path = dirs::home_dir().unwrap();
-    bin_path.push("bin");
-    match Path::new(&bin_path).exists() {
-        true => {
-            println!("binary dir found")
-        }
-        false => fs::create_dir(&bin_path).expect("Could not create binary dir"),
-    }
-
-    let log_path = log_path();
-    match Path::new(&log_path).exists() {
-        true => {
-            println!("Log file found")
-        }
-        false => {
-            let mut file =
-                fs::File::create(&log_path).expect("Failed Could not setup new log file.");
-            if let Err(e) = write!(file, "") {
-                eprintln!("Couldn't write to log file: {}", e);
-            }
-        }
-    }
-}
-
 fn main() {
     let mut app = App::default();
     match app.init() {
