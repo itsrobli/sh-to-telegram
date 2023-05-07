@@ -1,7 +1,6 @@
 use clap::Parser;
 use lib::cli::{Cli, Commands, DownloadTask};
 use lib::config::{Config, ConfigError};
-use lib::logger::log_path;
 use lib::telegram;
 use std::fs;
 use std::io::prelude::*;
@@ -12,7 +11,7 @@ fn main() {
     let mut app = App::default();
     match app.init() {
         Ok(_) => {
-            println!("App startup successful!")
+            // eprintln!("App startup successful!")
         }
         Err(err) => {
             println!("{err}");
