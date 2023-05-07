@@ -25,6 +25,25 @@ impl LogFile {
         }
         Ok(())
     }
+    pub fn log_this(msg: String) -> Result<(), LogFileError> {
+        let log_path = match LogFile::default_path() {
+            Ok(path) => path,
+            Err(err) => {
+                return Err(LogFileError::FileNotFound);
+            },
+        };
+
+        let mut file = OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(log_path)
+            .map_err(|_| LogFileError::FileCouldNotBeOpened)?;
+
+        if let Err(e) = writeln!(file, "{}", log_formatter(msg)) {
+            return Err(LogFileError::FileCouldNotBeWritten);
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Clone)]
@@ -39,6 +58,10 @@ pub enum LogFileError {
     FileNotFound,
     #[error("log file not able to be created")]
     FileCouldNotBeCreated,
+    #[error("log file not able to be opened")]
+    FileCouldNotBeOpened,
+    #[error("log file not able to be written to")]
+    FileCouldNotBeWritten,
     #[error("user home path can't be determined")]
     HomePathNotFound,
     #[error("binary path can't be created")]
