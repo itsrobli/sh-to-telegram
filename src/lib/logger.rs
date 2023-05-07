@@ -20,7 +20,7 @@ impl LogFile {
     pub fn create_template_log_file() -> Result<(), LogFileError> {
         let mut file = fs::File::create(LogFile::default_path()?)
             .map_err(|_| LogFileError::FileCouldNotBeCreated)?;
-        if let Err(_) = writeln!(file, "") {
+        if let Err(_) = writeln!(file) {
             return Err(LogFileError::FileCouldNotBeCreated);
         }
         Ok(())
