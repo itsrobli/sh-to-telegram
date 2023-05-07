@@ -12,9 +12,11 @@ I wanted to learn Rust. And I wanted to know when long-running downloads started
 
 - [ ] Sign the app for macOS.
 - [ ] Add build for Windows. 
-- [ ] Remove the prints from `init_check()` when things are fine.
+- [x] Remove the prints from `init_check()` when things are fine.
 - [ ] End-to-end tests of the CLI commands.
+  - [x] Started some testing...
 - [ ] Feels like too much `.unwrap()` usage.
+  - [x] Made it more modular and let caller handle errors.
 
 # Installation
 
