@@ -1,9 +1,9 @@
-use crate::logger::log_this;
 use chrono::prelude::*;
 use frankenstein::Api;
 use frankenstein::SendMessageParams;
 use frankenstein::TelegramApi;
 use std::path::Path;
+use crate::logger::LogFile;
 
 pub fn send_message(msg: String, token: &String, current_chat_id: &String) {
     let api = Api::new(token.as_str());
@@ -23,14 +23,14 @@ pub fn format_message_download_finished(has_moved: bool, file_path: &String) -> 
         message.push_str("moved to Plex ");
         let now = Local::now();
         message.push_str(now.format("%Y/%m/%d").to_string().as_str());
-        log_this("moved ".to_owned() + filename)
+        LogFile::log_this("moved ".to_owned() + filename).expect("TODO: LogFile::log_this");
     } else {
         message.push_str("did not move ");
         let now = Local::now();
         message.push_str(now.format("%Y/%m/%d").to_string().as_str());
-        log_this("no-move ".to_owned() + filename)
+        LogFile::log_this("no-move ".to_owned() + filename).expect("TODO: LogFile::log_this");
     }
-    return message;
+    message
 }
 
 pub fn format_message_download_started(file_path: &String) -> String {
@@ -39,5 +39,5 @@ pub fn format_message_download_started(file_path: &String) -> String {
     message.push_str("started downloading ");
     let now = Local::now();
     message.push_str(now.format("%Y/%m/%d").to_string().as_str());
-    return message;
+    message
 }

@@ -1,6 +1,6 @@
 [package]
 name = "sh-to-telegram"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 authors = ["Robert Li"]
 description = "A CLI bridge to Telegram to send almost pre-canned messages."
@@ -8,10 +8,19 @@ readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "lib"
+path = "src/lib/mod.rs"
+
+[[bin]]
+name = "sh-to-telegram"
+path = "src/main.rs"
+
 [dependencies]
-clap = { version = "4.1.1", features = ["derive"] }
-frankenstein = "0.22.0"
+clap = { version = "4.2.4", features = ["derive"] }
+frankenstein = "0.25.0"
 chrono = "0.4"
-dirs = "4.0.0"
-toml = "0.5.9"
+dirs = "5.0.0"
+toml = "0.7.3"
 serde = "1.0.138"
+thiserror = "1.0.40"
