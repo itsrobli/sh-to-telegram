@@ -26,12 +26,7 @@ impl LogFile {
         Ok(())
     }
     pub fn log_this(msg: String) -> Result<(), LogFileError> {
-        let log_path = match LogFile::default_path() {
-            Ok(path) => path,
-            Err(err) => {
-                return Err(LogFileError::FileNotFound);
-            },
-        };
+        let log_path = LogFile::default_path()?;
 
         let mut file = OpenOptions::new()
             .write(true)
@@ -39,7 +34,7 @@ impl LogFile {
             .open(log_path)
             .map_err(|_| LogFileError::FileCouldNotBeOpened)?;
 
-        if let Err(e) = writeln!(file, "{}", log_formatter(msg)) {
+        if let Err(_e) = writeln!(file, "{}", log_formatter(msg)) {
             return Err(LogFileError::FileCouldNotBeWritten);
         }
         Ok(())

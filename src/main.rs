@@ -2,9 +2,6 @@ use clap::Parser;
 use lib::cli::{Cli, Commands, DownloadTask};
 use lib::config::{Config, ConfigError};
 use lib::telegram;
-use std::fs;
-use std::io::prelude::*;
-use std::path::Path;
 use lib::app_init::App;
 
 fn main() {
